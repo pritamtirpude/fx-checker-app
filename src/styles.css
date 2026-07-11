@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-jetbrains-mono: 'JetBrains Mono', monospace;
+
+  /* Font sizes */
+  --text-size-1: 40px;
+  --text-size-1-tablet: 32px;
+  --text-size-2: 20px;
+  --text-size-3: 16px;
+  --text-size-4: 14px;
+  --text-size-5: 12px;
+  --text-size-6: 10px;
+
+  /* Line heights */
+  --line-height-100: 100%;
+  --line-height-110: 110%;
+  --line-height-120: 120%;
+  --line-height-130: 130%;
+  --line-height-140: 140%;
+
+  /* Letter spacing */
+  --letter-spacing-0: 0px;
+  --letter-spacing-neg-0-5: -0.5px;
+  --letter-spacing-0-5: 0.5px;
+  --letter-spacing-1: 1px;
+
+  /* Font weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Colors - FX Neutral */
+  --color-fx-neutral-900: hsl(300 40% 4%);
+  --color-fx-neutral-700: hsl(120 40% 11%);
+  --color-fx-neutral-600: hsl(270 3% 13%);
+  --color-fx-neutral-500: hsl(0 0% 18%);
+  --color-fx-neutral-400: hsl(0 0% 19%);
+  --color-fx-neutral-300: hsl(270 1% 27%);
+  --color-fx-neutral-200: hsl(120 5% 62%);
+  --color-fx-neutral-100: hsl(0 0% 78%);
+  --color-fx-neutral-50: hsl(0 100% 100%);
+
+  /* Colors - FX Lime */
+  --color-fx-lime-500: hsl(71 92% 60%);
+  --color-fx-lime-800: hsl(73 100% 10%);
+
+  /* Colors - FX Green */
+  --color-fx-green-500: hsl(104 98% 47%);
+
+  /* Colors - FX Red */
+  --color-fx-red-500: hsl(0 100% 63%);
+
+  --text-preset-1: var(--text-size-1);
+  --text-preset-1--line-height: var(--line-height-100);
+  --text-preset-1--letter-spacing: var(--letter-spacing-0);
+  --text-preset-1--font-weight: var(--font-weight-bold);
+
+  --text-preset-1-tablet: var(--text-size-1-tablet);
+  --text-preset-1-tablet--line-height: var(--line-height-100);
+  --text-preset-1-tablet--letter-spacing: var(--letter-spacing-0);
+  --text-preset-1-tablet--font-weight: var(--font-weight-bold);
+
+  --text-preset-2: var(--text-size-2);
+  --text-preset-2--line-height: var(--line-height-120);
+  --text-preset-2--letter-spacing: var(--letter-spacing-neg-0-5);
+  --text-preset-2--font-weight: var(--font-weight-medium);
+
+  --text-preset-3: var(--text-size-3);
+  --text-preset-3--line-height: var(--line-height-120);
+  --text-preset-3--letter-spacing: var(--letter-spacing-0);
+  --text-preset-3--font-weight: var(--font-weight-regular);
+
+  --text-preset-4: var(--text-size-4);
+  --text-preset-4--line-height: var(--line-height-120);
+  --text-preset-4--letter-spacing: var(--letter-spacing-0);
+  --text-preset-4--font-weight: var(--font-weight-regular);
+
+  --text-preset-5: var(--text-size-5);
+  --text-preset-5--line-height: var(--line-height-120);
+  --text-preset-5--letter-spacing: var(--letter-spacing-0);
+  --text-preset-5--font-weight: var(--font-weight-regular);
+
+  --text-preset-6: var(--text-size-6);
+  --text-preset-6--line-height: var(--line-height-120);
+  --text-preset-6--letter-spacing: var(--letter-spacing-0);
+  --text-preset-6--font-weight: var(--font-weight-regular);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/public/assets/fonts/jetbrains-mono/jetbrains-mono-variable.ttf')
+    format('truetype');
+  font-weight: 100 800;
+  font-display: swap;
+  font-style: normal;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  font-family: var(--font-jetbrains-mono);
+}
