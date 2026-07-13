@@ -1,15 +1,17 @@
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
 
+import Header from '@/components/Header'
+import { ThemeProvider } from '@/context/ThemeProvider'
 import type { QueryClient } from '@tanstack/react-query'
 
 interface MyRouterContext {
@@ -38,16 +40,28 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: () => (
+    <div className="flex h-screen w-screen items-center justify-center">
+      <h1 className="text-3xl font-bold">404 - Not Found</h1>
+    </div>
+  ),
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
-        {children}
+      <body suppressHydrationWarning>
+        <ThemeProvider defaultTheme="dark" storageKey="fx-theme">
+          <header>
+            <nav>
+              <Header />
+            </nav>
+          </header>
+          {children}
+        </ThemeProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',

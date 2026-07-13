@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-jetbrains-mono: 'JetBrains Mono', monospace;
 
@@ -89,13 +91,11 @@
 
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('/public/assets/fonts/jetbrains-mono/jetbrains-mono-variable.ttf')
+  src: url('/assets/fonts/jetbrains-mono/jetbrains-mono-variable.ttf')
     format('truetype');
   font-weight: 100 800;
   font-display: swap;
@@ -107,4 +107,23 @@ body,
 #app {
   min-height: 100%;
   font-family: var(--font-jetbrains-mono);
+}
+
+/* Dark theme */
+/* html.dark {
+  background-color: var(--color-fx-neutral-900);
+  color: var(--color-fx-neutral-50);
+} */
+
+html.dark body {
+  background-color: var(--color-fx-neutral-900);
+}
+
+/* Light theme */
+/* html.light {
+  background-color: var(--color-fx-neutral-50);
+} */
+
+html.light body {
+  background-color: var(--color-fx-neutral-50);
 }
