@@ -10,7 +10,6 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
 
-import Header from '@/components/Header'
 import { ThemeProvider } from '@/context/ThemeProvider'
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -55,11 +54,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider defaultTheme="dark" storageKey="fx-theme">
-          <header>
-            <nav>
-              <Header />
-            </nav>
-          </header>
           {children}
         </ThemeProvider>
         <TanStackDevtools
