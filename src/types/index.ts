@@ -1,4 +1,4 @@
-type Rate = {
+export type Rate = {
   date: string
   base: string
   quote: string

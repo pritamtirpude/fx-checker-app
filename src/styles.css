@@ -33,15 +33,15 @@
   --font-weight-bold: 700;
 
   /* Colors - FX Neutral */
-  --color-fx-neutral-900: hsl(300 40% 4%);
-  --color-fx-neutral-700: hsl(120 40% 11%);
-  --color-fx-neutral-600: hsl(270 3% 13%);
+  --color-fx-neutral-900: hsl(0 0% 4%);
+  --color-fx-neutral-700: hsl(240 4% 9%);
+  --color-fx-neutral-600: hsl(240 3% 13%);
   --color-fx-neutral-500: hsl(0 0% 18%);
-  --color-fx-neutral-400: hsl(0 0% 19%);
+  --color-fx-neutral-400: hsl(0 0% 24%);
   --color-fx-neutral-300: hsl(270 1% 27%);
-  --color-fx-neutral-200: hsl(120 5% 62%);
+  --color-fx-neutral-200: hsl(0 0% 62%);
   --color-fx-neutral-100: hsl(0 0% 78%);
-  --color-fx-neutral-50: hsl(0 100% 100%);
+  --color-fx-neutral-50: hsl(0 0% 100%);
 
   /* Colors - FX Lime */
   --color-fx-lime-500: hsl(71 92% 60%);
@@ -107,6 +107,7 @@ body,
 #app {
   min-height: 100%;
   font-family: var(--font-jetbrains-mono);
+  overflow-x: hidden;
 }
 
 /* Dark theme */
