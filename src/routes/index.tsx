@@ -1,7 +1,9 @@
+import { fetchCurrenciesOptions } from '@/api/currencies'
 import {
   fetchLiveRatesOptions,
   fetchYesterdayRatesOptions,
 } from '@/api/liverates'
+import CheckRate from '@/components/CheckRate'
 import Header from '@/components/Header'
 import LiveTicker from '@/components/LiveTicker'
 import { createFileRoute } from '@tanstack/react-router'
@@ -12,10 +14,9 @@ export const Route = createFileRoute('/')({
     await Promise.all([
       context.queryClient.ensureQueryData(fetchLiveRatesOptions()),
       context.queryClient.ensureQueryData(fetchYesterdayRatesOptions()),
+      context.queryClient.ensureQueryData(fetchCurrenciesOptions()),
     ])
   },
-  staleTime: 0,
-  gcTime: 0,
 })
 
 function Home() {
@@ -27,6 +28,11 @@ function Home() {
           <LiveTicker />
         </nav>
       </header>
+      <body>
+        <main className="mx-auto w-full max-w-275 px-8 py-12">
+          <CheckRate />
+        </main>
+      </body>
     </>
   )
 }

@@ -16,7 +16,7 @@ function LiveTicker() {
   const rateChanges = useRateChanges(liveRates, yesterdayRates)
 
   const itemRenderer = rateChanges.map((rate, index) => (
-    <ul key={rate.displayRate + index}>
+    <ul className="flex items-stretch" key={rate.displayRate + index}>
       <li className="flex items-center justify-center gap-2.5 select-none">
         <span className="text-fx-neutral-200 text-preset-5">{rate.pair}</span>
         <span className="text-fx-neutral-50 text-preset-5">
@@ -25,9 +25,7 @@ function LiveTicker() {
         <span
           className={cn(
             'text-preset-5',
-            rate.color === 'green'
-              ? 'text-shadow-fx-green-500'
-              : 'text-fx-neutral-200',
+            rate.color === 'green' ? 'text-fx-green-500' : 'text-fx-red-500',
           )}
         >
           {rate.arrow}
@@ -35,9 +33,7 @@ function LiveTicker() {
         <span
           className={cn(
             'text-preset-5',
-            rate.color === 'green'
-              ? 'text-shadow-fx-green-500'
-              : 'text-fx-red-500',
+            rate.color === 'green' ? 'text-fx-green-500' : 'text-fx-red-500',
           )}
         >
           {rate.displayPercentage}

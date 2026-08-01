@@ -5,7 +5,7 @@ import { createServerFn } from '@tanstack/react-start'
 const getLiveRatesServerFunc = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Rates> => {
     const res = await fetch(
-      `${process.env.BASE_URL}/rates?base=INR&quotes=USD,EUR,GBP,JPY,CHF,CNY,AUD,NZD,SGD,HKD,KRW,THB,MYR,PHP,IDR,AED,ARS,BDT,BGN,BHD,BRL,CAD,CLP,COP,CZK,DKK,EGP,HNL,HRK,HTG,HUF,ISK,JOD,KES,KWD,LBP,LKR,MAD,MXN,NGN,NOK,NPR,OMR,PEN,PKR,PLN,QAR,RON,RUB,SAR,SEK,TRY,TWD,UAH,VND,ZAR`,
+      `${process.env.BASE_URL}/rates?base=USD&quotes=INR,EUR,GBP,JPY,CHF,CNY,AUD,NZD,SGD,HKD,KRW,THB,MYR,PHP,IDR,AED,ARS,BDT,BGN,BHD,BRL,CAD,CLP,COP,CZK,DKK,EGP,HNL,HRK,HTG,HUF,ISK,JOD,KES,KWD,LBP,LKR,MAD,MXN,NGN,NOK,NPR,OMR,PEN,PKR,PLN,QAR,RON,RUB,SAR,SEK,TRY,TWD,UAH,VND,ZAR`,
     )
     return res.json()
   },
@@ -18,7 +18,7 @@ const getYesterdayRatesServerFunc = createServerFn({ method: 'GET' }).handler(
     const yesterdayStr = yesterday.toISOString().split('T')[0]
 
     const res = await fetch(
-      `${process.env.BASE_URL}/rates?base=INR&date=${yesterdayStr}&quotes=USD,EUR,GBP,JPY,CHF,CNY,AUD,NZD,SGD,HKD,KRW,THB,MYR,PHP,IDR,AED,ARS,BDT,BGN,BHD,BRL,CAD,CLP,COP,CZK,DKK,EGP,HNL,HRK,HTG,HUF,ISK,JOD,KES,KWD,LBP,LKR,MAD,MXN,NGN,NOK,NPR,OMR,PEN,PKR,PLN,QAR,RON,RUB,SAR,SEK,TRY,TWD,UAH,VND,ZAR`,
+      `${process.env.BASE_URL}/rates?base=USD&date=${yesterdayStr}&quotes=INR,EUR,GBP,JPY,CHF,CNY,AUD,NZD,SGD,HKD,KRW,THB,MYR,PHP,IDR,AED,ARS,BDT,BGN,BHD,BRL,CAD,CLP,COP,CZK,DKK,EGP,HNL,HRK,HTG,HUF,ISK,JOD,KES,KWD,LBP,LKR,MAD,MXN,NGN,NOK,NPR,OMR,PEN,PKR,PLN,QAR,RON,RUB,SAR,SEK,TRY,TWD,UAH,VND,ZAR`,
     )
     return res.json()
   },
