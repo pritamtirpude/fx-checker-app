@@ -22,6 +22,7 @@ const CURRENCY_FLAG_MAP: Record<string, string> = {
   EUR: 'eu',
   GBP: 'gb',
   HKD: 'hk',
+  HNL: 'hn',
   HRK: 'hr',
   HTG: 'ht',
   HUF: 'hu',

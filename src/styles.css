@@ -83,6 +83,11 @@
   --text-preset-5--letter-spacing: var(--letter-spacing-0);
   --text-preset-5--font-weight: var(--font-weight-regular);
 
+  --text-preset-5-medium: var(--text-size-5);
+  --text-preset-5-medium--line-height: var(--line-height-130);
+  --text-preset-5-medium--letter-spacing: var(--letter-spacing-0-5);
+  --text-preset-5-medium--font-weight: var(--font-weight-medium);
+
   --text-preset-6: var(--text-size-6);
   --text-preset-6--line-height: var(--line-height-120);
   --text-preset-6--letter-spacing: var(--letter-spacing-0);

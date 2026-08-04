@@ -1,6 +1,8 @@
 import { fetchCurrenciesOptions } from '@/api/currencies'
 import useClickOutside from '@/hooks/useClickOutside'
+import useDebounce from '@/hooks/useDebounce'
 import { useCurrencyStore } from '@/store/store'
+import { cn } from '@/utils'
 import { getCurrencyOptions } from '@/utils/currency'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -13,14 +15,16 @@ type Props = {
 function CurrencyDropdown({ slot, defaultCode }: Props) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search)
   const { data: currenciesData } = useQuery(fetchCurrenciesOptions())
   const selected = useCurrencyStore((s) => s[slot])
   const setSend = useCurrencyStore((s) => s.setSend)
   const setReceive = useCurrencyStore((s) => s.setReceive)
 
-  const dropdownRef = useClickOutside(() =>
-    setIsDropdownOpen(false),
-  ) as React.RefObject<HTMLDivElement>
+  const dropdownRef = useClickOutside(() => {
+    setIsDropdownOpen(false)
+    setSearch('')
+  }) as React.RefObject<HTMLDivElement>
 
   const setSelected = slot === 'send' ? setSend : setReceive
 
@@ -35,11 +39,17 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
     setSelected(match)
   }, [currencies.length])
 
-  const popularCurrencies = currencies.filter((c) =>
-    ['USD', 'EUR', 'GBP'].includes(c.code),
+  const popularCurrencies = currencies.filter(
+    (c) =>
+      ['USD', 'EUR', 'GBP'].includes(c.code) &&
+      (c.code.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        c.name.toLowerCase().includes(debouncedSearch.toLowerCase())),
   )
   const otherCurrencies = currencies.filter(
-    (c) => !['USD', 'EUR', 'GBP'].includes(c.code),
+    (c) =>
+      !['USD', 'EUR', 'GBP'].includes(c.code) &&
+      (c.code.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        c.name.toLowerCase().includes(debouncedSearch.toLowerCase())),
   )
 
   return (
@@ -66,12 +76,14 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
       {isDropdownOpen && (
         <div
           ref={dropdownRef}
-          className="bg-fx-neutral-600 outline-fx-neutral-400 scrollbar-thumb-fx-neutral-500 absolute right-0 mt-2.5 h-116 w-96 scrollbar-thin overflow-y-auto rounded-md p-2 outline"
+          className="bg-fx-neutral-600 outline-fx-neutral-400 scrollbar-thumb-fx-neutral-500 absolute right-0 mt-2.5 h-116 w-96 scrollbar-thin overflow-y-auto rounded-md p-2 shadow-2xl outline"
         >
           <div className="relative">
             <input
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
               placeholder="Search currencies..."
-              type="text"
+              type="search"
               className="outline-fx-neutral-200 text-preset-5 focus:outline-fx-lime-500 w-full rounded-md px-8 py-3 outline"
             />
             <img
@@ -81,7 +93,12 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
             />
           </div>
           <div className="mt-2.5">
-            <div className="border-fx-neutral-500 flex items-center justify-between border-b p-2">
+            <div
+              className={cn(
+                'border-fx-neutral-500 flex items-center justify-between border-b p-2',
+                search.length > 0 && 'hidden',
+              )}
+            >
               <h3 className="text-preset-5 text-fx-neutral-200 uppercase">
                 Popular
               </h3>
@@ -129,12 +146,17 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
               </ul>
             </div>
             <div className="mt-2.5">
-              <div className="border-fx-neutral-500 flex items-center justify-between border-b p-2">
+              <div
+                className={cn(
+                  'border-fx-neutral-500 flex items-center justify-between border-b p-2',
+                  search.length > 0 && 'hidden',
+                )}
+              >
                 <h3 className="text-preset-5 text-fx-neutral-200 uppercase">
                   Other Currencies
                 </h3>
                 <span className="text-preset-5 text-fx-neutral-200">
-                  {otherCurrencies.length + 1}
+                  {otherCurrencies.length}
                 </span>
               </div>
               <div className="mt-1">

@@ -45,7 +45,7 @@ function LiveTicker() {
   return (
     <div className="flex overflow-hidden">
       <div className="bg-fx-lime-500">
-        <div className="text-fx-neutral-900 text-preset-5 flex w-34.5 justify-center gap-2 px-4 py-3 uppercase">
+        <div className="text-fx-neutral-900 text-preset-5-medium flex w-40 justify-center gap-2 px-4 py-3 uppercase">
           <span>&#9679;</span>
           <span>live markets</span>
         </div>
