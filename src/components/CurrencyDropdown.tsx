@@ -5,6 +5,7 @@ import { useCurrencyStore } from '@/store/store'
 import { cn } from '@/utils'
 import { getCurrencyOptions } from '@/utils/currency'
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
 type Props = {
@@ -27,6 +28,18 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
   }) as React.RefObject<HTMLDivElement>
 
   const setSelected = slot === 'send' ? setSend : setReceive
+  const navigate = useNavigate()
+  const searchParam = slot === 'send' ? 'base' : 'quote'
+
+  const handleSelect = (currency: (typeof currencies)[0]) => {
+    setSelected(currency)
+    setIsDropdownOpen(false)
+    setSearch('')
+    navigate({
+      to: '.',
+      search: (prev) => ({ ...prev, [searchParam]: currency.code }),
+    })
+  }
 
   const currencies = getCurrencyOptions(currenciesData || [])
 
@@ -113,7 +126,7 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
                     key={currency.code}
                     tabIndex={0}
                     className="hover:outline-fx-neutral-200 focus:ring-fx-lime-500 flex cursor-pointer items-center justify-between rounded-sm px-2 py-3.5 hover:outline focus:ring-1 focus:outline-none"
-                    onClick={() => setSelected(currency)}
+                    onClick={() => handleSelect(currency)}
                   >
                     <div className="flex items-center gap-3">
                       <span className="size-5 overflow-hidden rounded-full">
@@ -166,7 +179,7 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
                       className="hover:outline-fx-neutral-200 focus:ring-fx-lime-500 flex cursor-pointer items-center justify-between rounded-sm px-2 py-3.5 hover:outline focus:ring-1 focus:outline-none"
                       key={currency.code}
                       tabIndex={0}
-                      onClick={() => setSelected(currency)}
+                      onClick={() => handleSelect(currency)}
                     >
                       <div className="flex items-center gap-3">
                         <span className="size-5 overflow-hidden rounded-full">
