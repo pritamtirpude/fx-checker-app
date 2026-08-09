@@ -42,7 +42,7 @@ function CheckRate() {
         check the rate
       </h1>
       <div className="bg-fx-neutral-700 mt-4 rounded-[20px]">
-        <div className="flex items-center gap-6 p-5">
+        <div className="flex flex-col items-center gap-6 p-5 md:flex-row">
           <RateCard
             title="send"
             inputType="text"
@@ -57,7 +57,7 @@ function CheckRate() {
             <img
               src="/assets/images/icon-exchange.svg"
               alt="exchange"
-              className="size-5"
+              className="size-5 rotate-90 transition-transform md:rotate-0"
             />
           </button>
           <RateCard
@@ -69,7 +69,7 @@ function CheckRate() {
         </div>
         <div className="h-0.5 w-full bg-[linear-gradient(to_right,var(--color-fx-neutral-500)_50%,transparent_50%)] bg-size-[10px_100%]" />
 
-        <div className="flex items-center justify-between p-5">
+        <div className="flex flex-col items-center gap-4 p-5 md:flex-row md:justify-between md:gap-0">
           <div>
             <p className="text-preset-5 text-fx-neutral-50">
               {rateData ? (

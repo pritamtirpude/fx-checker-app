@@ -89,7 +89,7 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
       {isDropdownOpen && (
         <div
           ref={dropdownRef}
-          className="bg-fx-neutral-600 outline-fx-neutral-400 scrollbar-thumb-fx-neutral-500 absolute right-0 mt-2.5 h-116 w-96 scrollbar-thin overflow-y-auto rounded-md p-2 shadow-2xl outline"
+          className="bg-fx-neutral-600 outline-fx-neutral-400 scrollbar-thumb-fx-neutral-500 absolute right-0 z-50 mt-2.5 h-116 w-96 scrollbar-thin overflow-y-auto rounded-md p-2 shadow-2xl outline"
         >
           <div className="relative">
             <input

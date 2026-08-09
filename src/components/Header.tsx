@@ -2,7 +2,11 @@ function Header() {
   return (
     <div className="flex items-center justify-between p-4 md:px-6 md:py-5">
       <div>
-        <img src="/assets/images/logo.svg" alt="fx checker logo" />
+        <img
+          src="/assets/images/logo.svg"
+          alt="fx checker logo"
+          className="h-5 w-25 md:h-auto md:w-auto"
+        />
       </div>
       <div>
         <div>
