@@ -7,8 +7,10 @@ import {
 import { fetchSingleRateOptions } from '@/api/singlecurrency'
 import CheckRate from '@/components/CheckRate'
 import Header from '@/components/Header'
+import HistoryContent from '@/components/HistoryContent'
 import LiveTicker from '@/components/LiveTicker'
 import Tabs, { Tab } from '@/components/Tabs'
+import { useCurrencyStore } from '@/store/store'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
@@ -19,6 +21,8 @@ export const Route = createFileRoute('/')({
   loaderDeps: ({ search }) => ({ base: search.base, quote: search.quote }),
   component: Home,
   loader: async ({ context, deps }) => {
+    const { period } = useCurrencyStore.getState()
+
     await Promise.all([
       context.queryClient.ensureQueryData(fetchLiveRatesOptions()),
       context.queryClient.ensureQueryData(fetchYesterdayRatesOptions()),
@@ -27,7 +31,7 @@ export const Route = createFileRoute('/')({
         fetchSingleRateOptions(deps.base, deps.quote, 1000),
       ),
       context.queryClient.ensureQueryData(
-        fetchHistoryRatesOptions(deps.base, deps.quote),
+        fetchHistoryRatesOptions(deps.base, deps.quote, period),
       ),
     ])
   },
@@ -48,7 +52,7 @@ function Home() {
           <section className="mt-10 lg:mt-8">
             <Tabs defaultTab="history">
               <Tab title="history">
-                <h1>History</h1>
+                <HistoryContent />
               </Tab>
               <Tab title="compare">
                 <h1>Compare</h1>

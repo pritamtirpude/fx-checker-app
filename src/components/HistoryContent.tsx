@@ -1,5 +1,11 @@
-function HistoryConten() {
-  return <div>HistoryConten</div>
+import HistoryHeader from './HistoryHeader'
+
+function HistoryContent() {
+  return (
+    <>
+      <HistoryHeader />
+    </>
+  )
 }
 
-export default HistoryConten
+export default HistoryContent
