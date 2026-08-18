@@ -22,9 +22,9 @@ function HistoryHeader() {
   const arrow = isPositive ? '▲' : '▼'
 
   return (
-    <div className="mt-5 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="outline-fx-neutral-600 bg-fx-neutral-700 flex flex-col gap-4 rounded-2xl px-5 py-3 outline">
+    <div className="mt-5 flex flex-col items-start justify-between gap-5 xl:flex-row xl:items-center xl:gap-0">
+      <div className="grid w-full grid-cols-2 gap-2.5 md:flex md:items-center md:gap-4">
+        <div className="outline-fx-neutral-600 bg-fx-neutral-700 flex w-auto flex-col gap-4 rounded-2xl px-5 py-3 outline md:w-35">
           <span className="text-preset-4 text-fx-neutral-50/75 inline-block uppercase">
             open
           </span>
@@ -33,7 +33,7 @@ function HistoryHeader() {
           </span>
         </div>
 
-        <div className="outline-fx-neutral-600 bg-fx-neutral-700 flex flex-col gap-4 rounded-2xl px-5 py-3 outline">
+        <div className="outline-fx-neutral-600 bg-fx-neutral-700 flex w-auto flex-col gap-4 rounded-2xl px-5 py-3 outline md:w-35">
           <span className="text-preset-4 text-fx-neutral-50/75 inline-block uppercase">
             last
           </span>
@@ -42,7 +42,7 @@ function HistoryHeader() {
           </span>
         </div>
 
-        <div className="outline-fx-neutral-600 bg-fx-neutral-700 flex flex-col gap-4 rounded-2xl px-5 py-3 outline">
+        <div className="outline-fx-neutral-600 bg-fx-neutral-700 flex w-auto flex-col gap-4 rounded-2xl px-5 py-3 outline md:w-35">
           <span className="text-preset-4 text-fx-neutral-50/75 inline-block uppercase">
             change
           </span>
@@ -57,7 +57,7 @@ function HistoryHeader() {
           </span>
         </div>
 
-        <div className="outline-fx-neutral-600 bg-fx-neutral-700 flex flex-col gap-4 rounded-2xl px-5 py-3 outline">
+        <div className="outline-fx-neutral-600 bg-fx-neutral-700 flex w-auto flex-col gap-4 rounded-2xl px-5 py-3 outline md:w-35">
           <span className="text-preset-4 text-fx-neutral-50/75 inline-block uppercase">
             % change
           </span>
