@@ -22,7 +22,7 @@ function RateCard({
   return (
     <div className="outline-fx-neutral-500 bg-fx-neutral-600 w-full rounded-2xl p-5 outline">
       <h2 className="text-preset-4 text-fx-neutral-100 uppercase">{title}</h2>
-      <div className="mt-5 flex w-full items-center justify-between">
+      <div className="relative mt-5 flex items-center justify-between">
         <div className="flex-1">
           <NumericFormat
             thousandSeparator=","

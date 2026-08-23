@@ -66,10 +66,10 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
   )
 
   return (
-    <div className="relative">
+    <div className="w-auto md:relative md:w-auto">
       <button
         onClick={() => setIsDropdownOpen((prevState) => !prevState)}
-        className="bg-fx-neutral-500 outline-fx-neutral-400 focus:ring-fx-lime-500 flex shrink-0 cursor-pointer items-center gap-2 rounded-lg p-2.5 outline focus:ring-2"
+        className="bg-fx-neutral-500 outline-fx-neutral-400 focus:ring-fx-lime-500 ml-auto flex shrink-0 cursor-pointer items-center gap-2 rounded-lg p-2.5 outline focus:ring-2"
       >
         <span className="size-5 overflow-hidden rounded-full">
           <img
@@ -89,7 +89,7 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
       {isDropdownOpen && (
         <div
           ref={dropdownRef}
-          className="bg-fx-neutral-600 outline-fx-neutral-400 scrollbar-thumb-fx-neutral-500 absolute right-0 z-9999999 mt-2.5 h-116 w-96 scrollbar-thin overflow-y-auto rounded-md p-2 shadow-2xl outline"
+          className="bg-fx-neutral-600 outline-fx-neutral-400 scrollbar-thumb-fx-neutral-500 absolute top-[calc(100%+10px)] right-0 left-0 z-9999999 h-116 min-w-0 scrollbar-thin overflow-y-auto rounded-md p-2 shadow-2xl outline md:top-[calc(100%+16px)] md:right-0 md:left-auto md:w-max md:min-w-80"
         >
           <div className="relative">
             <input

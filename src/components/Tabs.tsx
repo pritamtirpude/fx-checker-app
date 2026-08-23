@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { LayoutGroup, motion } from 'motion/react'
 import type { PropsWithChildren, ReactElement, RefObject } from 'react'
 import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -61,17 +61,20 @@ function Tabs({ defaultTab, children, target }: TabsProps) {
     ?.props.children
   return (
     <div>
-      <ul
-        className="border-fx-neutral-600 flex w-full items-center gap-2 border-b"
-        role="tablist"
-        onClickCapture={handleTabClick}
-      >
-        {children.map((child) =>
-          React.cloneElement(child, {
-            isActive: child.props.title === isActiveTab,
-          }),
-        )}
-      </ul>
+      <LayoutGroup>
+        <ul
+          className="border-fx-neutral-600 flex w-full items-center gap-2 border-b"
+          role="tablist"
+          onClickCapture={handleTabClick}
+        >
+          {children.map((child) =>
+            React.cloneElement(child, {
+              key: child.props.title,
+              isActive: child.props.title === isActiveTab,
+            }),
+          )}
+        </ul>
+      </LayoutGroup>
 
       {content && target?.current != null ? (
         createPortal(

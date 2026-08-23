@@ -46,27 +46,25 @@ function Home() {
           <LiveTicker />
         </nav>
       </header>
-      <body>
-        <main className="w-full px-4 py-8 md:px-6 md:py-12 lg:mx-auto lg:max-w-275 lg:px-8">
-          <CheckRate />
-          <section className="mt-10 lg:mt-8">
-            <Tabs defaultTab="history">
-              <Tab title="history">
-                <HistoryContent />
-              </Tab>
-              <Tab title="compare">
-                <h1>Compare</h1>
-              </Tab>
-              <Tab title="favorites">
-                <h1>Favorites</h1>
-              </Tab>
-              <Tab title="log">
-                <h1>Log</h1>
-              </Tab>
-            </Tabs>
-          </section>
-        </main>
-      </body>
+      <main className="w-full px-4 py-8 md:px-6 md:py-12 lg:mx-auto lg:max-w-275 lg:px-8">
+        <CheckRate />
+        <section className="mt-10 lg:mt-8">
+          <Tabs defaultTab="history">
+            <Tab title="history">
+              <HistoryContent />
+            </Tab>
+            <Tab title="compare">
+              <h1>Compare</h1>
+            </Tab>
+            <Tab title="favorites">
+              <h1>Favorites</h1>
+            </Tab>
+            <Tab title="log">
+              <h1>Log</h1>
+            </Tab>
+          </Tabs>
+        </section>
+      </main>
     </>
   )
 }
