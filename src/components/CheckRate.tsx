@@ -1,6 +1,9 @@
 import { fetchSingleRateOptions } from '@/api/singlecurrency'
 import useDebounce from '@/hooks/useDebounce'
+import { toFavoriteKey, useFavoritesStore } from '@/store/favoritesStore'
+import { useLogStore } from '@/store/logStore'
 import { useCurrencyStore } from '@/store/store'
+import { cn } from '@/utils'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -10,6 +13,11 @@ function CheckRate() {
   const { base, quote } = useSearch({ from: '/' })
   const { amount, setAmount, swapCurrencies } = useCurrencyStore()
   const navigate = useNavigate()
+
+  const hasHydrated = useFavoritesStore((s) => s.hasHydrated)
+  const favorites = useFavoritesStore((s) => s.favorites)
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite)
+  const addLog = useLogStore((s) => s.addLog)
 
   const handleSwap = () => {
     swapCurrencies()
@@ -31,10 +39,25 @@ function CheckRate() {
   const handleAmountChange = (v: string) => {
     setInputValue(v)
     const num = parseFloat(v)
-    if (!isNaN(num) && num > 0) setAmount(num)
+    setAmount(!isNaN(num) && num > 0 ? num : 0)
   }
 
   const converted = rateData?.converted ?? null
+
+  const isFavorite =
+    hasHydrated && favorites.includes(toFavoriteKey(base, quote))
+
+  const handleLogConversion = () => {
+    if (!rateData || converted === null) return
+
+    addLog({
+      base,
+      quote,
+      amount: parsedAmount,
+      converted,
+      rate: rateData.rate,
+    })
+  }
 
   return (
     <section>
@@ -85,11 +108,34 @@ function CheckRate() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="text-preset-5-medium text-fx-neutral-200 outline-fx-neutral-300 focus:outline-fx-lime-500 focus:bg-fx-lime-500 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-3 uppercase outline transition-colors focus:outline-2 focus:outline-offset-2">
-              <img src="/assets/images/icon-star.svg" alt="star icon" />
-              favorited
+            <button
+              type="button"
+              aria-pressed={isFavorite}
+              onClick={() => toggleFavorite(base, quote)}
+              className={cn(
+                'text-preset-5-medium focus:outline-fx-lime-500 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-3 uppercase outline transition-colors focus:outline-2 focus:outline-offset-2',
+                isFavorite
+                  ? 'bg-fx-lime-500 text-fx-neutral-900 outline-fx-lime-500'
+                  : 'text-fx-neutral-200 outline-fx-neutral-300',
+              )}
+            >
+              <img
+                src={
+                  isFavorite
+                    ? '/assets/images/icon-star-filled.svg'
+                    : '/assets/images/icon-star.svg'
+                }
+                alt="star icon"
+                className={cn(isFavorite && 'brightness-0')}
+              />
+              {isFavorite ? 'favorited' : 'favorite'}
             </button>
-            <button className="text-preset-5-medium hover:bg-fx-lime-800 text-fx-neutral-200 focus:outline-fx-lime-500 outline-fx-neutral-300 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-3 uppercase outline-2 transition-colors focus:outline-2 focus:outline-offset-2">
+            <button
+              type="button"
+              disabled={!rateData || converted === null}
+              onClick={handleLogConversion}
+              className="text-preset-5-medium text-fx-neutral-200 outline-fx-neutral-300 hover:text-fx-neutral-50 hover:outline-fx-lime-500 hover:bg-fx-lime-800 focus:outline-fx-lime-500 focus:inset-ring-fx-lime-500 focus:text-fx-neutral-50 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-3 uppercase outline transition-colors focus:inset-ring-2 focus:outline-offset-2"
+            >
               log conversion
             </button>
           </div>

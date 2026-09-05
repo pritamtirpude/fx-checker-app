@@ -63,6 +63,10 @@ const CURRENCY_FLAG_MAP: Record<string, string> = {
   ZAR: 'za',
 }
 
+// Every currency code the app can quote/base against — kept as the single
+// source of truth so the live-rates API layer doesn't hardcode its own list.
+export const SUPPORTED_CURRENCY_CODES = Object.keys(CURRENCY_FLAG_MAP)
+
 export type CurrencyOption = {
   flag: string
   code: string

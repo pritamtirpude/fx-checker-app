@@ -1,3 +1,5 @@
+import { useFavoritesStore } from '@/store/favoritesStore'
+import { useLogStore } from '@/store/logStore'
 import { LayoutGroup, motion } from 'motion/react'
 import type { PropsWithChildren, ReactElement, RefObject } from 'react'
 import React, { useState } from 'react'
@@ -15,10 +17,13 @@ type TabsProps = {
 }
 
 export function Tab({ title, isActive }: TabProps) {
+  const favorites = useFavoritesStore((s) => s.favorites)
+  const logs = useLogStore((s) => s.logs)
+
   return (
     <li
       role="presentation"
-      className="relative flex items-center justify-center px-4 py-2.5"
+      className="has-focus-visible:outline-fx-lime-500 relative flex items-center justify-center rounded-md px-4 py-2.5 has-focus-visible:outline-2 has-focus-visible:outline-offset-2"
     >
       <button
         role="tab"
@@ -26,9 +31,21 @@ export function Tab({ title, isActive }: TabProps) {
         data-tab-title={title}
         aria-selected={isActive}
         aria-controls="tab-panel"
-        className="text-preset-3 text-fx-neutral-50 cursor-pointer uppercase"
+        className="text-preset-3 text-fx-neutral-50 flex cursor-pointer items-center gap-2 uppercase outline-none"
       >
         {title}
+
+        {title === 'favorites' && (
+          <span className="bg-fx-lime-800 text-preset-6 text-fx-lime-500 flex size-5 items-center justify-center rounded-full leading-none">
+            {favorites.length}
+          </span>
+        )}
+
+        {title === 'log' && (
+          <span className="bg-fx-lime-800 text-preset-6 text-fx-lime-500 flex size-5 items-center justify-center rounded-full leading-none">
+            {logs.length}
+          </span>
+        )}
       </button>
 
       {isActive && (
@@ -60,7 +77,7 @@ function Tabs({ defaultTab, children, target }: TabsProps) {
   const content = children.find((child) => child.props.title === isActiveTab)
     ?.props.children
   return (
-    <div>
+    <div className="hidden md:block">
       <LayoutGroup>
         <ul
           className="border-fx-neutral-600 flex w-full items-center gap-2 border-b"

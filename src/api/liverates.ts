@@ -1,45 +1,49 @@
 import type { Rates } from '@/types'
+import { SUPPORTED_CURRENCY_CODES } from '@/utils/currency'
 import { queryOptions } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
 
-const getLiveRatesServerFunc = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<Rates> => {
+const quotesFor = (base: string) =>
+  SUPPORTED_CURRENCY_CODES.filter((code) => code !== base).join(',')
+
+const getLiveRatesServerFunc = createServerFn({ method: 'GET' })
+  .validator((base: string) => base)
+  .handler(async ({ data: base }): Promise<Rates> => {
     const res = await fetch(
-      `${process.env.BASE_URL}/rates?base=USD&quotes=INR,EUR,GBP,JPY,CHF,CNY,AUD,NZD,SGD,HKD,KRW,THB,MYR,PHP,IDR,AED,ARS,BDT,BGN,BHD,BRL,CAD,CLP,COP,CZK,DKK,EGP,HNL,HRK,HTG,HUF,ISK,JOD,KES,KWD,LBP,LKR,MAD,MXN,NGN,NOK,NPR,OMR,PEN,PKR,PLN,QAR,RON,RUB,SAR,SEK,TRY,TWD,UAH,VND,ZAR`,
+      `${process.env.BASE_URL}/rates?base=${base}&quotes=${quotesFor(base)}`,
     )
     return res.json()
-  },
-)
+  })
 
-const getYesterdayRatesServerFunc = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<Rates> => {
+const getYesterdayRatesServerFunc = createServerFn({ method: 'GET' })
+  .validator((base: string) => base)
+  .handler(async ({ data: base }): Promise<Rates> => {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
     const yesterdayStr = yesterday.toISOString().split('T')[0]
 
     const res = await fetch(
-      `${process.env.BASE_URL}/rates?base=USD&date=${yesterdayStr}&quotes=INR,EUR,GBP,JPY,CHF,CNY,AUD,NZD,SGD,HKD,KRW,THB,MYR,PHP,IDR,AED,ARS,BDT,BGN,BHD,BRL,CAD,CLP,COP,CZK,DKK,EGP,HNL,HRK,HTG,HUF,ISK,JOD,KES,KWD,LBP,LKR,MAD,MXN,NGN,NOK,NPR,OMR,PEN,PKR,PLN,QAR,RON,RUB,SAR,SEK,TRY,TWD,UAH,VND,ZAR`,
+      `${process.env.BASE_URL}/rates?base=${base}&date=${yesterdayStr}&quotes=${quotesFor(base)}`,
     )
     return res.json()
-  },
-)
+  })
 
-export const fetchLiveRatesOptions = () => {
+export const fetchLiveRatesOptions = (base: string = 'USD') => {
   return queryOptions({
-    queryKey: ['liveRates'],
+    queryKey: ['liveRates', base],
     queryFn: () => {
-      return getLiveRatesServerFunc()
+      return getLiveRatesServerFunc({ data: base })
     },
     staleTime: 60 * 1000, // 1 minute
     refetchInterval: 60 * 1000, // 1 minute
   })
 }
 
-export const fetchYesterdayRatesOptions = () => {
+export const fetchYesterdayRatesOptions = (base: string = 'USD') => {
   return queryOptions({
-    queryKey: ['yesterdayRates'],
+    queryKey: ['yesterdayRates', base],
     queryFn: () => {
-      return getYesterdayRatesServerFunc()
+      return getYesterdayRatesServerFunc({ data: base })
     },
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
   })

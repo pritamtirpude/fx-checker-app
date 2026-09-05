@@ -6,9 +6,13 @@ import {
 } from '@/api/liverates'
 import { fetchSingleRateOptions } from '@/api/singlecurrency'
 import CheckRate from '@/components/CheckRate'
+import CompareContent from '@/components/CompareContent'
+import FavoritesContent from '@/components/FavoritesContent'
 import Header from '@/components/Header'
 import HistoryContent from '@/components/HistoryContent'
 import LiveTicker from '@/components/LiveTicker'
+import LogContent from '@/components/LogContent'
+import MobileTabs from '@/components/MobileTabs'
 import Tabs, { Tab } from '@/components/Tabs'
 import { useCurrencyStore } from '@/store/store'
 import { createFileRoute } from '@tanstack/react-router'
@@ -23,9 +27,16 @@ export const Route = createFileRoute('/')({
   loader: async ({ context, deps }) => {
     const { period } = useCurrencyStore.getState()
 
+    // LiveTicker always shows USD-based rates regardless of the selected
+    // pair, while Compare/Favorites need rates for the currently selected
+    // base — prefetch both (deduped when the selected base is already USD).
+    const liveRateBases = Array.from(new Set(['USD', deps.base]))
+
     await Promise.all([
-      context.queryClient.ensureQueryData(fetchLiveRatesOptions()),
-      context.queryClient.ensureQueryData(fetchYesterdayRatesOptions()),
+      ...liveRateBases.flatMap((base) => [
+        context.queryClient.ensureQueryData(fetchLiveRatesOptions(base)),
+        context.queryClient.ensureQueryData(fetchYesterdayRatesOptions(base)),
+      ]),
       context.queryClient.ensureQueryData(fetchCurrenciesOptions()),
       context.queryClient.ensureQueryData(
         fetchSingleRateOptions(deps.base, deps.quote, 1000),
@@ -54,15 +65,16 @@ function Home() {
               <HistoryContent />
             </Tab>
             <Tab title="compare">
-              <h1>Compare</h1>
+              <CompareContent />
             </Tab>
             <Tab title="favorites">
-              <h1>Favorites</h1>
+              <FavoritesContent />
             </Tab>
             <Tab title="log">
-              <h1>Log</h1>
+              <LogContent />
             </Tab>
           </Tabs>
+          <MobileTabs />
         </section>
       </main>
     </>

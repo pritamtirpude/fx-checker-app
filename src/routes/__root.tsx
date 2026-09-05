@@ -48,7 +48,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className="scrollbar-thin scrollbar-thumb-fx-neutral-500 scrollbar-track-transparent hover:scrollbar-thumb-fx-neutral-400"
+    >
       <head>
         <HeadContent />
       </head>
