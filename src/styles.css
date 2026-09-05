@@ -115,21 +115,64 @@ body,
   overflow-x: hidden;
 }
 
-/* Dark theme */
-/* html.dark {
-  background-color: var(--color-fx-neutral-900);
-  color: var(--color-fx-neutral-50);
-} */
-
-html.dark body {
-  background-color: var(--color-fx-neutral-900);
+/*
+  The history chart's line/fill/tooltip-value color. Defaults to fx-lime-500,
+  which is bright enough to read on the dark theme's near-black card but
+  nearly disappears against the light theme's near-white card — so light
+  mode gets its own darker, more saturated green instead of reusing the
+  brand lime shade verbatim.
+*/
+:root {
+  --color-fx-chart-line: var(--color-fx-lime-500);
 }
 
-/* Light theme */
-/* html.light {
-  background-color: var(--color-fx-neutral-50);
-} */
+html.light {
+  --color-fx-chart-line: hsl(100 70% 32%);
+}
+
+/*
+  Page canvas colors are fixed literals, deliberately independent of the
+  fx-neutral-* scale below: that scale gets redefined per theme, and if this
+  rule read var(--color-fx-neutral-50)/900 it would flip along with it.
+*/
+html.dark body {
+  background-color: hsl(0 0% 4%);
+}
 
 html.light body {
-  background-color: var(--color-fx-neutral-50);
+  background-color: hsl(0 0% 100%);
+}
+
+/*
+  Every component is written against a single dark-mode fx-neutral-* scale
+  (bg-fx-neutral-700 cards, text-fx-neutral-50 primary text, etc.) — none of
+  them know about theme. Rather than touch every usage, redefine the scale's
+  values for light mode here so the same classes render correctly in both.
+  fx-neutral-900 is intentionally left alone: every usage of it in the app is
+  fixed near-black text on a bright accent chip (e.g. the lime "favorited"
+  button), not a themeable surface/text role, so it must not invert.
+*/
+html.light {
+  --color-fx-neutral-50: hsl(0 0% 4%);
+  --color-fx-neutral-100: hsl(0 0% 22%);
+  --color-fx-neutral-200: hsl(0 0% 38%);
+  --color-fx-neutral-300: hsl(270 1% 73%);
+  --color-fx-neutral-400: hsl(0 0% 76%);
+  --color-fx-neutral-500: hsl(0 0% 82%);
+  --color-fx-neutral-600: hsl(240 3% 87%);
+  --color-fx-neutral-700: hsl(240 4% 91%);
+}
+
+/*
+  Most icon assets under /assets/images/icon-* are hardcoded white line art
+  (drawn for the dark theme only) loaded via plain <img> tags, so they can't
+  pick up currentColor. Inverting them in light mode turns white -> near-black
+  and leaves transparency untouched, which reads correctly for flat
+  single-color glyphs. icon-star-filled.svg is excluded because it's a fixed
+  lime brand color (the favorited state), not a themeable line icon.
+*/
+html.light img[src^='/assets/images/icon-']:not(
+    [src$='icon-star-filled.svg']
+  ) {
+  filter: invert(1);
 }

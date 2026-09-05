@@ -70,12 +70,12 @@ function HistoryChart() {
                 >
                   <stop
                     offset="0%"
-                    stopColor="var(--color-fx-lime-500)"
+                    stopColor="var(--color-fx-chart-line)"
                     stopOpacity={0.4}
                   />
                   <stop
                     offset="100%"
-                    stopColor="var(--color-fx-lime-500)"
+                    stopColor="var(--color-fx-chart-line)"
                     stopOpacity={0}
                   />
                 </linearGradient>
@@ -114,12 +114,12 @@ function HistoryChart() {
                   borderRadius: 8,
                 }}
                 labelStyle={{ color: 'var(--color-fx-neutral-50)' }}
-                itemStyle={{ color: 'var(--color-fx-lime-500)' }}
+                itemStyle={{ color: 'var(--color-fx-chart-line)' }}
               />
               <Area
                 type="monotone"
                 dataKey="rate"
-                stroke="var(--color-fx-lime-500)"
+                stroke="var(--color-fx-chart-line)"
                 strokeWidth={2}
                 fill="url(#historyRateFill)"
               />
