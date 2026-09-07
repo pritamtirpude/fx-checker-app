@@ -1,6 +1,7 @@
 import useClickOutside from '@/hooks/useClickOutside'
 import { motion } from 'motion/react'
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
 type ClearLogModalProps = {
   count: number
@@ -24,7 +25,7 @@ function ClearLogModal({ count, onClose, onConfirm }: ClearLogModalProps) {
     onClose()
   }
 
-  return (
+  const modal = (
     <>
       {/*
         The panel fades out first, then the backdrop clears — fading both
@@ -37,7 +38,7 @@ function ClearLogModal({ count, onClose, onConfirm }: ClearLogModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-40 bg-black/75 backdrop-blur-xs"
+        className="fixed top-0 left-0 z-40 size-full bg-black/75 backdrop-blur-sm"
       />
       {/*
         The <dialog> itself is left unanimated: it's a native top-layer
@@ -85,6 +86,10 @@ function ClearLogModal({ count, onClose, onConfirm }: ClearLogModalProps) {
       </motion.dialog>
     </>
   )
+
+  return typeof document === 'undefined'
+    ? null
+    : createPortal(modal, document.body)
 }
 
 export default ClearLogModal

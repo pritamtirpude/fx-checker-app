@@ -1,6 +1,6 @@
 import { useFavoritesStore } from '@/store/favoritesStore'
 import { useLogStore } from '@/store/logStore'
-import { LayoutGroup, motion } from 'motion/react'
+import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
 import type { PropsWithChildren, ReactElement, RefObject } from 'react'
 import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -14,6 +14,24 @@ type TabsProps = {
   target?: RefObject<HTMLElement>
   defaultTab?: string
   children: ReactElement<TabProps, typeof Tab>[]
+}
+
+const panelVariants = {
+  enter: (direction: number) => ({
+    opacity: 0,
+    x: direction * 80,
+    filter: 'blur(8px)',
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    filter: 'blur(0px)',
+  },
+  exit: (direction: number) => ({
+    opacity: 0,
+    x: direction * -80,
+    filter: 'blur(8px)',
+  }),
 }
 
 export function Tab({ title, isActive }: TabProps) {
@@ -64,13 +82,26 @@ function Tabs({ defaultTab, children, target }: TabsProps) {
   const [isActiveTab, setIsActiveTab] = useState(
     defaultTab || children[0].props.title,
   )
+  const [direction, setDirection] = useState(1)
 
   const handleTabClick = ({
     target: targetInstance,
   }: React.MouseEvent<HTMLUListElement>) => {
     if (targetInstance instanceof HTMLButtonElement) {
       const tabTitle = targetInstance.dataset.tabTitle
-      if (tabTitle) setIsActiveTab(tabTitle)
+      if (tabTitle) {
+        const previousIndex = children.findIndex(
+          (child) => child.props.title === isActiveTab,
+        )
+        const nextIndex = children.findIndex(
+          (child) => child.props.title === tabTitle,
+        )
+
+        if (nextIndex !== -1 && nextIndex !== previousIndex) {
+          setDirection(nextIndex > previousIndex ? 1 : -1)
+          setIsActiveTab(tabTitle)
+        }
+      }
     }
   }
 
@@ -105,13 +136,29 @@ function Tabs({ defaultTab, children, target }: TabsProps) {
           target.current,
         )
       ) : (
-        <section
-          role="tabpanel"
-          id="tab-panel"
-          aria-labelledby={`tab-${isActiveTab}`}
-        >
-          {content}
-        </section>
+        <AnimatePresence initial={false} mode="wait" custom={direction}>
+          {content && (
+            <motion.section
+              key={isActiveTab}
+              custom={direction}
+              variants={panelVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 30,
+                bounce: 0,
+              }}
+              role="tabpanel"
+              id="tab-panel"
+              aria-labelledby={`tab-${isActiveTab}`}
+            >
+              {content}
+            </motion.section>
+          )}
+        </AnimatePresence>
       )}
     </div>
   )

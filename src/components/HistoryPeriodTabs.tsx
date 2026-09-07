@@ -1,7 +1,6 @@
 import type { Period } from '@/api/historyrates'
 import { useCurrencyStore } from '@/store/store'
 import { cn } from '@/utils'
-import { motion } from 'motion/react'
 
 const periods: { label: string; value: Period }[] = [
   { label: '1D', value: '1D' },
@@ -19,34 +18,19 @@ function HistoryPeriodTabs() {
   return (
     <ul className="bg-fx-neutral-700 flex items-center rounded-lg">
       {periods.map((p) => (
-        <motion.li
+        <li
           className={cn(
-            'text-preset-5 relative z-50 px-4 py-3',
+            'text-preset-5 px-4 py-3 transition-all duration-200',
             period === p.value
-              ? 'text-fx-neutral-50 rounded-lg'
+              ? 'text-fx-neutral-50 bg-fx-neutral-500 rounded-lg'
               : 'text-fx-neutral-200',
           )}
-
           key={p.value}
         >
           <button className="cursor-pointer" onClick={() => setPeriod(p.value)}>
             {p.label}
           </button>
-
-          {period === p.value && (
-            <motion.div
-              layout
-              key={p.value}
-              transition={{
-                type: 'spring',
-                stiffness: 500,
-                damping: 35,
-              }}
-              className="bg-fx-neutral-500 absolute inset-0 -z-10 rounded-lg"
-              layoutId="period-tab-indicator"
-            />
-          )}
-        </motion.li>
+        </li>
       ))}
     </ul>
   )

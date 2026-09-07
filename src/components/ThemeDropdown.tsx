@@ -43,9 +43,9 @@ function ThemeDropdown() {
         type="button"
         onClick={() => setIsOpen((prevState) => !prevState)}
         aria-label="Change theme"
-        className="bg-fx-neutral-500 outline-fx-neutral-400 focus:ring-fx-lime-500 flex shrink-0 cursor-pointer items-center gap-2 rounded-lg p-2.5 outline focus:ring-2"
+        className="bg-fx-neutral-500 outline-fx-neutral-400 focus:ring-fx-lime-500 flex shrink-0 cursor-pointer items-center gap-2 rounded-lg p-2 outline focus:ring-2"
       >
-        <ThemeIcon theme={theme} className="text-fx-neutral-50 size-5" />
+        <ThemeIcon theme={theme} className="text-fx-neutral-50 size-4" />
         <img src="/assets/images/icon-chevron-down.svg" alt="chevron icon" />
       </button>
       <AnimatePresence>
@@ -72,7 +72,7 @@ function ThemeDropdown() {
                         className={cn(
                           'size-4',
                           theme === option.value
-                            ? 'text-fx-lime-500'
+                            ? 'dark:text-fx-lime-500 text-fx-green-500'
                             : 'text-fx-neutral-200',
                         )}
                       />

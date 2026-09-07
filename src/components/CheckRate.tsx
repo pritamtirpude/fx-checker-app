@@ -13,6 +13,7 @@ function CheckRate() {
   const { base, quote } = useSearch({ from: '/' })
   const { amount, setAmount, swapCurrencies } = useCurrencyStore()
   const navigate = useNavigate()
+  const [isSwapped, setIsSwapped] = useState(false)
 
   const hasHydrated = useFavoritesStore((s) => s.hasHydrated)
   const favorites = useFavoritesStore((s) => s.favorites)
@@ -21,6 +22,7 @@ function CheckRate() {
 
   const handleSwap = () => {
     swapCurrencies()
+    setIsSwapped((previous) => !previous)
     navigate({
       to: '.',
       search: (prev) => ({ base: prev.quote, quote: prev.base }),
@@ -80,7 +82,10 @@ function CheckRate() {
             <img
               src="/assets/images/icon-exchange.svg"
               alt="exchange"
-              className="size-5 rotate-90 transition-transform md:rotate-0"
+              className={cn(
+                'size-5 rotate-90 transition-transform duration-300 md:rotate-180',
+                isSwapped && 'rotate-270 md:rotate-0',
+              )}
             />
           </button>
           <RateCard
