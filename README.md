@@ -1,214 +1,183 @@
-Welcome to your new TanStack Start app!
+# FX Checker
 
-# Getting Started
+An exchange-rate workspace for checking live currency conversions, comparing market movement, exploring historical rates, and keeping useful pairs close at hand.
 
-To run this application:
+**[Open the live app](https://fx-exchg-checker-app.vercel.app/)** · **[View the source on GitHub](https://github.com/pritamtirpude/fx-checker-app)**
+
+## Screenshots
+
+### Desktop
+
+![FX Checker desktop interface](public/assets/images/screenshots/wide-1.png)
+
+### Mobile
+
+![FX Checker mobile interface](public/assets/images/screenshots/narrow-1.png)
+
+## What It Does
+
+- Convert an amount between supported currencies with live rates.
+- Browse a scrolling live-rate ticker with daily change indicators.
+- Review historical rates for periods from one day to five years.
+- Compare multiple currencies against the selected base currency.
+- Save favorite currency pairs for quick access.
+- Keep a local conversion log and clear it when needed.
+- Switch between light and dark themes.
+- Use the responsive layout on desktop and mobile screens.
+
+Rates are provided by the [Frankfurter API](https://www.frankfurter.app/), with supported currencies filtered through the app's currency and flag mapping.
+
+## Tech Stack
+
+| Area         | Tools                                                                          |
+| ------------ | ------------------------------------------------------------------------------ |
+| Framework    | React 19, TanStack Start, Nitro                                                |
+| Routing      | TanStack Router with file-based routes and typed search params                 |
+| Server state | TanStack Query with SSR prefetching and hydration                              |
+| Client state | Zustand for selected currency objects, amount, period, favorites, and log data |
+| Charts       | Recharts for historical exchange-rate visualizations                           |
+| Styling      | Tailwind CSS v4 with CSS-first design tokens                                   |
+| Motion       | Motion for animated tab indicators and Motion Plus for the live ticker         |
+| Utilities    | date-fns, clsx, tailwind-merge, lucide-react, react-number-format              |
+| Tooling      | Vite, TypeScript, ESLint, Prettier, Vitest, Testing Library, Playwright        |
+
+## Architecture
+
+The app keeps URL state and UI state deliberately separate:
+
+- `base` and `quote` live in the URL, making currency pairs shareable and preserving them across navigation.
+- Zustand stores the richer currency objects needed by dropdowns, plus the amount and selected chart period.
+- TanStack Router loaders prefetch all data required by the page before rendering.
+- TanStack Query owns caching, deduplication, stale data, and request lifecycle state.
+- TanStack Start server functions keep Frankfurter requests on the server boundary.
+
+When a currency is selected, the reusable dropdown updates both the Zustand store and the URL. This keeps the visible selection, route loader, and query keys synchronized.
+
+## Reusable Components
+
+The UI is organized around focused components rather than one large page:
+
+- `CheckRate` handles the main conversion workflow, swapping, amount input, and pair selection.
+- `CurrencyDropdown` provides searchable currency selection with flags and URL synchronization.
+- `RateCard` presents a reusable live-rate summary with change information.
+- `HistoryChart` renders historical data with Recharts.
+- `HistoryPeriodTabs` controls the chart range without coupling chart logic to the page.
+- `Tabs` provides the shared history, compare, favorites, and log workspace navigation.
+- `LiveTicker` uses Motion Plus to animate current market data across the header.
+- `ThemeProvider` and `ThemeDropdown` manage persisted light and dark themes without a flash during hydration.
+- `ClearLogModal` isolates the destructive confirmation flow from log rendering.
+
+## Project Structure
+
+```text
+fx-checker-app/
+├── public/
+│   ├── assets/
+│   │   ├── fonts/                 # JetBrains Mono font files
+│   │   ├── images/flags/          # Currency flag assets
+│   │   └── images/screenshots/    # README preview images
+│   ├── manifest.json
+│   ├── robots.txt
+│   ├── sitemap.xml
+│   └── sw.js
+├── src/
+│   ├── api/                       # Server functions and query option factories
+│   │   ├── currencies.ts
+│   │   ├── historyrates.ts
+│   │   ├── liverates.ts
+│   │   └── singlecurrency.ts
+│   ├── components/                # Reusable application UI
+│   ├── config/                    # Site-level configuration
+│   ├── context/                   # Theme context and providers
+│   ├── hooks/                     # Shared React hooks
+│   ├── integrations/              # TanStack Query provider and devtools
+│   ├── routes/                    # File-based TanStack Router routes
+│   │   ├── __root.tsx
+│   │   └── index.tsx
+│   ├── store/                     # Zustand stores
+│   ├── types/                     # Shared TypeScript types
+│   ├── utils/                     # Currency mapping and helper functions
+│   ├── router.tsx
+│   └── styles.css
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
+```
+
+`src/routeTree.gen.ts` is generated by TanStack Router and should not be edited manually.
+
+## Data Flow
+
+```text
+User selects a pair
+        ↓
+URL search params + Zustand store
+        ↓
+TanStack Router loader dependencies
+        ↓
+TanStack Query option factories
+        ↓
+TanStack Start server functions
+        ↓
+Frankfurter API
+        ↓
+Cached rates, cards, ticker, and Recharts history view
+```
+
+The route loader prefetches currencies, live rates, yesterday's rates, the selected conversion, and the selected historical series in parallel. Live rates refresh every 60 seconds, while historical and reference data remain cached according to their query options.
+
+## Getting Started
+
+### Requirements
+
+- Node.js 22 or newer
+- npm
+- A `BASE_URL` environment variable pointing to the Frankfurter API, for example:
+
+```env
+BASE_URL=https://api.frankfurter.dev/v2
+```
+
+### Install and run
 
 ```bash
 npm install
 npm run dev
 ```
 
-# Building For Production
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To build this application for production:
+## Available Scripts
+
+```bash
+npm run dev              # Start the Vite development server
+npm run build            # Build the TanStack Start application
+npm run preview          # Preview the production build
+npm run generate-routes  # Regenerate the TanStack Router route tree
+npm run lint             # Run ESLint
+npm run format           # Format files and apply ESLint fixes
+npm run check            # Check Prettier formatting
+npm run test             # Run Vitest
+```
+
+## Deployment
+
+The app is deployed on Vercel and uses Nitro as its runtime adapter. The production build can also target other Node-compatible Nitro presets.
 
 ```bash
 npm run build
 ```
 
-## Testing
+Live deployment: [fx-exchg-checker-app.vercel.app](https://fx-exchg-checker-app.vercel.app/)
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+## Design Notes
 
-```bash
-npm run test
-```
+- JetBrains Mono gives the interface a precise, instrument-panel feel suited to numeric data.
+- CSS custom properties define the FX neutral, lime, green, and red design tokens in one place.
+- The same semantic Tailwind classes are remapped for light mode, keeping components theme-aware without duplicating their styles.
+- Responsive tabs, compact cards, and mobile-specific navigation keep the main conversion flow usable at smaller widths.
 
-## Styling
+## License
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
-
-## Linting & Formatting
-
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
-
-```bash
-npm run lint
-npm run format
-npm run check
-```
-
-## Deploy with Nitro
-
-This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
-
-```bash
-npm run build
-node dist/server/index.mjs
-```
-
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
-
-For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from '@tanstack/react-router'
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+This project is a personal portfolio application. See the repository for the current licensing terms.
