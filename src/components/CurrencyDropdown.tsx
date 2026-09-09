@@ -7,7 +7,7 @@ import { getCurrencyOptions } from '@/utils/currency'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Props = {
   slot: 'send' | 'receive'
@@ -17,6 +17,10 @@ type Props = {
 function CurrencyDropdown({ slot, defaultCode }: Props) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [activeIndex, setActiveIndex] = useState(0)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([])
   const debouncedSearch = useDebounce(search)
   const { data: currenciesData } = useQuery(fetchCurrenciesOptions())
   const selected = useCurrencyStore((s) => s[slot])
@@ -40,6 +44,7 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
       to: '.',
       search: (prev) => ({ ...prev, [searchParam]: currency.code }),
     })
+    requestAnimationFrame(() => triggerRef.current?.focus())
   }
 
   const currencies = getCurrencyOptions(currenciesData || [])
@@ -66,24 +71,89 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
         c.name.toLowerCase().includes(debouncedSearch.toLowerCase())),
   )
 
+  const visibleCurrencies = [...popularCurrencies, ...otherCurrencies]
+  const listboxId = `currency-listbox-${slot}`
+  const searchInputId = `currency-search-${slot}`
+  const activeCurrency = visibleCurrencies[activeIndex]
+
+  const closeDropdown = (shouldRestoreFocus = false) => {
+    setIsDropdownOpen(false)
+    setSearch('')
+
+    if (shouldRestoreFocus) {
+      requestAnimationFrame(() => triggerRef.current?.focus())
+    }
+  }
+
+  useEffect(() => {
+    if (isDropdownOpen) {
+      searchInputRef.current?.focus()
+    }
+  }, [isDropdownOpen])
+
+  useEffect(() => {
+    setActiveIndex((index) =>
+      visibleCurrencies.length === 0
+        ? 0
+        : Math.min(index, visibleCurrencies.length - 1),
+    )
+  }, [visibleCurrencies.length])
+
+  useEffect(() => {
+    if (!isDropdownOpen || visibleCurrencies.length === 0) return
+
+    optionRefs.current[activeIndex]?.scrollIntoView({
+      block: 'nearest',
+      inline: 'nearest',
+    })
+  }, [activeIndex, debouncedSearch, isDropdownOpen, visibleCurrencies.length])
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      closeDropdown(true)
+      return
+    }
+
+    if (visibleCurrencies.length === 0) return
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setActiveIndex((prev) => (prev + 1) % visibleCurrencies.length)
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setActiveIndex(
+        (prev) =>
+          (prev - 1 + visibleCurrencies.length) % visibleCurrencies.length,
+      )
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSelect(visibleCurrencies[activeIndex])
+    }
+  }
+
   return (
     <div className="w-auto md:relative md:w-auto">
       <button
-        onClick={() => setIsDropdownOpen((prevState) => !prevState)}
+        ref={triggerRef}
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isDropdownOpen}
+        aria-controls={listboxId}
+        aria-label={`Select ${slot} currency`}
+        onClick={() => {
+          setIsDropdownOpen((prevState) => !prevState)
+          setActiveIndex(0)
+        }}
         className="bg-fx-neutral-500 outline-fx-neutral-400 focus:ring-fx-lime-500 ml-auto flex shrink-0 cursor-pointer items-center gap-2 rounded-lg p-2.5 outline focus:ring-2"
       >
         <span className="size-5 overflow-hidden rounded-full">
-          <img
-            src={selected?.flag}
-            alt={selected?.code}
-            className="size-full object-cover"
-          />
+          <img src={selected?.flag} alt="" className="size-full object-cover" />
         </span>
         <span className="text-preset-4 text-fx-neutral-50">
           {selected?.code}
         </span>
         <span>
-          <img src="/assets/images/icon-chevron-down.svg" alt="chevron icon" />
+          <img src="/assets/images/icon-chevron-down.svg" alt="" />
         </span>
       </button>
       <AnimatePresence>
@@ -99,8 +169,26 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
             className="bg-fx-neutral-600 outline-fx-neutral-400 scrollbar-thumb-fx-neutral-500 absolute top-[calc(100%+10px)] right-0 left-0 z-9999999 h-116 min-w-0 scrollbar-thin overflow-y-auto rounded-md p-2 shadow-2xl outline md:top-[calc(100%+16px)] md:right-0 md:left-auto md:w-max md:min-w-80"
           >
             <div className="relative">
+              <label className="sr-only" htmlFor={searchInputId}>
+                Search currencies
+              </label>
               <input
-                onChange={(e) => setSearch(e.target.value)}
+                ref={searchInputRef}
+                id={searchInputId}
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={isDropdownOpen}
+                aria-controls={listboxId}
+                aria-activedescendant={
+                  visibleCurrencies.length > 0
+                    ? `${listboxId}-option-${activeCurrency.code}`
+                    : undefined
+                }
+                onKeyDown={handleKeyDown}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  setActiveIndex(0)
+                }}
                 value={search}
                 placeholder="Search currencies..."
                 type="search"
@@ -109,11 +197,12 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
               <img
                 className="absolute top-1/2 left-3 -translate-y-1/2"
                 src="/assets/images/icon-search.svg"
-                alt="search icon"
+                alt=""
               />
             </div>
-            <div className="mt-2.5">
-              <div
+            <ul className="mt-2.5" id={listboxId} role="listbox">
+              <li
+                role="presentation"
                 className={cn(
                   'border-fx-neutral-500 flex items-center justify-between border-b p-2',
                   search.length > 0 && 'hidden',
@@ -125,101 +214,117 @@ function CurrencyDropdown({ slot, defaultCode }: Props) {
                 <span className="text-preset-5 text-fx-neutral-200">
                   {popularCurrencies.length}
                 </span>
-              </div>
-              <div className="mt-1">
-                <ul>
-                  {popularCurrencies.map((currency) => (
-                    <li
-                      key={currency.code}
-                      tabIndex={0}
-                      className="hover:outline-fx-neutral-200 focus:ring-fx-lime-500 flex cursor-pointer items-center justify-between rounded-sm px-2 py-3.5 hover:outline focus:ring-1 focus:outline-none"
-                      onClick={() => handleSelect(currency)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="size-5 overflow-hidden rounded-full">
-                          <img
-                            src={currency.flag}
-                            alt={currency.code}
-                            className="size-full object-cover"
-                          />
-                        </span>
-                        <span className="text-preset-4 text-fx-neutral-50">
-                          {currency.code}
-                        </span>
-                        <span className="text-preset-5 text-fx-neutral-200">
-                          {currency.name}
+              </li>
+              {popularCurrencies.map((currency, index) => (
+                <li
+                  key={currency.code}
+                  role="presentation"
+                  className={cn(index === 0 && 'mt-1')}
+                >
+                  <button
+                    ref={(element) => {
+                      optionRefs.current[index] = element
+                    }}
+                    id={`${listboxId}-option-${currency.code}`}
+                    type="button"
+                    role="option"
+                    aria-selected={selected?.code === currency.code}
+                    className={cn(
+                      'hover:outline-fx-neutral-200 focus:ring-fx-lime-500 flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-3.5 text-left hover:outline focus:ring-1 focus:outline-none',
+                      activeIndex === visibleCurrencies.indexOf(currency) &&
+                        'bg-fx-neutral-500',
+                    )}
+                    onClick={() => handleSelect(currency)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="size-5 overflow-hidden rounded-full">
+                        <img
+                          src={currency.flag}
+                          alt=""
+                          className="size-full object-cover"
+                        />
+                      </span>
+                      <span className="text-preset-4 text-fx-neutral-50">
+                        {currency.code}
+                      </span>
+                      <span className="text-preset-5 text-fx-neutral-200">
+                        {currency.name}
+                      </span>
+                    </div>
+
+                    {selected?.code === currency.code && (
+                      <div>
+                        <span>
+                          <img src="/assets/images/icon-check.svg" alt="" />
                         </span>
                       </div>
-
-                      {selected?.code === currency.code && (
-                        <div>
-                          <span>
-                            <img
-                              src="/assets/images/icon-check.svg"
-                              alt="check icon"
-                            />
-                          </span>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-2.5">
-                <div
-                  className={cn(
-                    'border-fx-neutral-500 flex items-center justify-between border-b p-2',
-                    search.length > 0 && 'hidden',
-                  )}
+                    )}
+                  </button>
+                </li>
+              ))}
+              <li
+                role="presentation"
+                className={cn(
+                  'border-fx-neutral-500 mt-2.5 flex items-center justify-between border-b p-2',
+                  search.length > 0 && 'hidden',
+                )}
+              >
+                <h3 className="text-preset-5 text-fx-neutral-200 uppercase">
+                  Other Currencies
+                </h3>
+                <span className="text-preset-5 text-fx-neutral-200">
+                  {otherCurrencies.length}
+                </span>
+              </li>
+              {otherCurrencies.map((currency, index) => (
+                <li
+                  key={currency.code}
+                  role="presentation"
+                  className={cn(index === 0 && 'mt-1')}
                 >
-                  <h3 className="text-preset-5 text-fx-neutral-200 uppercase">
-                    Other Currencies
-                  </h3>
-                  <span className="text-preset-5 text-fx-neutral-200">
-                    {otherCurrencies.length}
-                  </span>
-                </div>
-                <div className="mt-1">
-                  <ul>
-                    {otherCurrencies.map((currency) => (
-                      <li
-                        className="hover:outline-fx-neutral-200 focus:ring-fx-lime-500 flex cursor-pointer items-center justify-between rounded-sm px-2 py-3.5 hover:outline focus:ring-1 focus:outline-none"
-                        key={currency.code}
-                        tabIndex={0}
-                        onClick={() => handleSelect(currency)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="size-5 overflow-hidden rounded-full">
-                            <img
-                              src={currency.flag}
-                              alt={currency.code}
-                              className="size-full object-cover"
-                            />
-                          </span>
-                          <span className="text-preset-4 text-fx-neutral-50">
-                            {currency.code}
-                          </span>
-                          <span className="text-preset-5 text-fx-neutral-200">
-                            {currency.name}
-                          </span>
-                        </div>
+                  <button
+                    ref={(element) => {
+                      optionRefs.current[popularCurrencies.length + index] =
+                        element
+                    }}
+                    id={`${listboxId}-option-${currency.code}`}
+                    type="button"
+                    role="option"
+                    aria-selected={selected?.code === currency.code}
+                    className={cn(
+                      'hover:outline-fx-neutral-200 focus:ring-fx-lime-500 flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-3.5 text-left hover:outline focus:ring-1 focus:outline-none',
+                      activeIndex === visibleCurrencies.indexOf(currency) &&
+                        'bg-fx-neutral-500',
+                    )}
+                    onClick={() => handleSelect(currency)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="size-5 overflow-hidden rounded-full">
+                        <img
+                          src={currency.flag}
+                          alt=""
+                          className="size-full object-cover"
+                        />
+                      </span>
+                      <span className="text-preset-4 text-fx-neutral-50">
+                        {currency.code}
+                      </span>
+                      <span className="text-preset-5 text-fx-neutral-200">
+                        {currency.name}
+                      </span>
+                    </div>
 
-                        {selected?.code === currency.code && (
-                          <div>
-                            <span>
-                              <img
-                                src="/assets/images/icon-check.svg"
-                                alt="check icon"
-                              />
-                            </span>
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
+                    {selected?.code === currency.code && (
+                      <div>
+                        <span>
+                          <img src="/assets/images/icon-check.svg" alt="" />
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </motion.div>
         )}
       </AnimatePresence>

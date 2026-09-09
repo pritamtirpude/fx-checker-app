@@ -13,7 +13,11 @@ const config = defineConfig({
     host: true,
   },
   plugins: [
-    devtools(),
+    devtools({
+      // Source-location attributes can differ between the SSR and client
+      // transforms, which causes a development-only hydration mismatch.
+      injectSource: { enabled: false },
+    }),
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tailwindcss(),
     tanstackStart(),

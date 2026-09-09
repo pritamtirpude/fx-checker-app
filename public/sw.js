@@ -5,7 +5,7 @@
 // Minimal service worker: gives the app installability (a fetch handler is
 // one of the browser's install criteria alongside the manifest) and basic
 // offline support for the app shell.
-const CACHE_NAME = 'fx-checker-v1'
+const CACHE_NAME = 'fx-checker-v2'
 const APP_SHELL = ['/', '/manifest.json']
 
 self.addEventListener('install', (event) => {
@@ -32,7 +32,12 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event
-  if (request.method !== 'GET') return
+  const url = new URL(request.url)
+
+  // A page can issue requests from browser extensions and third-party
+  // scripts. CacheStorage only accepts HTTP(S) requests, and this app shell
+  // cache should only contain resources from this origin.
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return
 
   // Navigations: network-first, so users get the latest app shell whenever
   // they're online, falling back to the cached shell when they're not.
