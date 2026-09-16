@@ -1,6 +1,6 @@
 import useClickOutside from '@/hooks/useClickOutside'
 import { motion } from 'motion/react'
-import { useEffect } from 'react'
+import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 
 type ClearLogModalProps = {
@@ -11,6 +11,8 @@ type ClearLogModalProps = {
 
 function ClearLogModal({ count, onClose, onConfirm }: ClearLogModalProps) {
   const ref = useClickOutside<HTMLDialogElement>(onClose)
+  const titleId = useId()
+  const descriptionId = useId()
 
   useEffect(() => {
     const dialog = ref.current
@@ -56,12 +58,14 @@ function ClearLogModal({ count, onClose, onConfirm }: ClearLogModalProps) {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         ref={ref}
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         className="bg-fx-neutral-700 fixed top-1/2 left-1/2 z-50 flex w-[90%] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-lg p-5 text-center outline-none md:max-w-85"
       >
-        <h2 className="text-preset-3 text-fx-neutral-50">
+        <h2 id={titleId} className="text-preset-3 text-fx-neutral-50">
           Clear the conversion log?
         </h2>
-        <p className="text-preset-5 text-fx-neutral-200">
+        <p id={descriptionId} className="text-preset-5 text-fx-neutral-200">
           This will permanently remove all {count} logged{' '}
           {count === 1 ? 'conversion' : 'conversions'}. This action cannot be
           undone.
@@ -71,14 +75,14 @@ function ClearLogModal({ count, onClose, onConfirm }: ClearLogModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="text-preset-6 outline-fx-neutral-500 hover:outline-fx-neutral-400 text-fx-neutral-200 cursor-pointer rounded-lg px-4 py-2.5 uppercase outline"
+            className="text-preset-6 outline-fx-neutral-500 hover:outline-fx-neutral-400 focus-visible:outline-fx-lime-500 text-fx-neutral-200 cursor-pointer rounded-lg px-4 py-2.5 uppercase outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleConfirm}
-            className="text-preset-6 bg-fx-red-500 text-fx-neutral-900 cursor-pointer rounded-lg px-4 py-2.5 uppercase"
+            className="text-preset-6 bg-fx-red-500 focus-visible:outline-fx-lime-500 text-fx-neutral-900 cursor-pointer rounded-lg px-4 py-2.5 uppercase focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             Clear log
           </button>

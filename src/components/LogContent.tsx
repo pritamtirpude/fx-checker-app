@@ -1,9 +1,16 @@
 import ClearLogModal from '@/components/ClearLogModal'
 import { useLogStore } from '@/store/logStore'
 import { formatAbsoluteTime, formatCompactRelativeTime } from '@/utils'
+import { download, generateCsv, mkConfig } from 'export-to-csv'
+import { Download } from 'lucide-react'
 import { AnimatePresence } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { NumericFormat } from 'react-number-format'
+
+const csvConfig = mkConfig({
+  useKeysAsHeaders: true,
+  filename: 'conversionlogs',
+})
 
 // The relative labels ("NOW", "6M", "2H") are derived from the current time,
 // so without a ticking clock they freeze at whatever the last render computed
@@ -45,6 +52,22 @@ function LogContent() {
     </AnimatePresence>
   )
 
+  const csvData = logs.map((log) => {
+    return {
+      base: log.base,
+      quote: log.quote,
+      amount: log.amount,
+      rate: log.rate,
+      converted: log.converted,
+    }
+  })
+
+  const csvLogData = generateCsv(csvConfig)(csvData)
+
+  const handleCSVDownload = () => {
+    download(csvConfig)(csvLogData)
+  }
+
   return (
     <>
       {clearLogModal}
@@ -66,14 +89,25 @@ function LogContent() {
               <p className="text-preset-3 text-fx-neutral-50 uppercase">
                 Conversion log
               </p>
-              <div className="flex w-full items-center justify-between gap-3 md:w-auto">
+              <div className="flex w-full items-center justify-between gap-0 md:w-auto md:gap-3">
+                <button
+                  type="button"
+                  onClick={handleCSVDownload}
+                  title="Download log as CSV"
+                  aria-label={`Download ${entries.length} logged conversions as CSV`}
+                  className="focus-visible:outline-fx-lime-500 text-fx-neutral-200 hover:text-fx-neutral-50 cursor-pointer rounded-lg p-1.5 focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <Download size={16} aria-hidden="true" focusable="false" />
+                </button>
                 <span className="text-preset-5 text-fx-neutral-200 uppercase">
                   {entries.length} logged
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsClearModalOpen(true)}
-                  className="text-preset-5 outline-fx-neutral-500 hover:outline-fx-neutral-400 text-fx-neutral-200 cursor-pointer rounded-lg px-2 py-1.5 uppercase outline"
+                  aria-haspopup="dialog"
+                  aria-label={`Clear all ${entries.length} logged conversions`}
+                  className="text-preset-5 outline-fx-neutral-500 hover:outline-fx-neutral-400 focus-visible:outline-fx-lime-500 text-fx-neutral-200 cursor-pointer rounded-lg px-2 py-1.5 uppercase outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   Clear all
                 </button>
