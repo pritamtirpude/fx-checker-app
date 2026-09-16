@@ -52,20 +52,21 @@ function LogContent() {
     </AnimatePresence>
   )
 
-  const csvData = logs.map((log) => {
-    return {
+  // Built on click rather than during render: `useKeysAsHeaders` derives the
+  // header row from `data[0]`, so generateCsv() throws on an empty array — and
+  // render runs for the empty-log branch too, where there is no row 0.
+  const handleCSVDownload = () => {
+    if (entries.length === 0) return
+
+    const csvData = entries.map((log) => ({
       base: log.base,
       quote: log.quote,
       amount: log.amount,
       rate: log.rate,
       converted: log.converted,
-    }
-  })
+    }))
 
-  const csvLogData = generateCsv(csvConfig)(csvData)
-
-  const handleCSVDownload = () => {
-    download(csvConfig)(csvLogData)
+    download(csvConfig)(generateCsv(csvConfig)(csvData))
   }
 
   return (
