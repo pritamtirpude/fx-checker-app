@@ -34,6 +34,7 @@ function RateCard({
             readOnly={inputType === 'readonly'}
             className={cn(
               'text-preset-1 focus:ring-fx-lime-500 w-full outline-none focus:rounded-lg focus:ring-2',
+              inputType === 'readonly' && 'text-fx-lime-500',
             )}
           />
         </div>
