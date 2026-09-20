@@ -4,14 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useSearch } from '@tanstack/react-router'
 import { format, parseISO } from 'date-fns'
 import { useEffect, useId, useRef, useState } from 'react'
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
+import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
 
 // parseDate keeps the calendar date stable across timezones (ISO-only strings default to UTC midnight)
 const parseDate = (date: string) => parseISO(date + 'T12:00:00')
@@ -20,7 +13,10 @@ function HistoryChart() {
   const { base, quote } = useSearch({ from: '/' })
   const period = useCurrencyStore((state) => state.period)
   const [mounted, setMounted] = useState(false)
-  const [chartSize, setChartSize] = useState<{ width: number; height: number }>()
+  const [chartSize, setChartSize] = useState<{
+    width: number
+    height: number
+  }>()
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const gradientId = useId().replace(/:/g, '')
 
@@ -34,9 +30,7 @@ function HistoryChart() {
 
     const updateSize = () => {
       const { width, height } = container.getBoundingClientRect()
-      setChartSize(
-        width > 0 && height > 0 ? { width, height } : undefined,
-      )
+      setChartSize(width > 0 && height > 0 ? { width, height } : undefined)
     }
 
     const resizeObserver = new ResizeObserver(updateSize)
@@ -46,9 +40,13 @@ function HistoryChart() {
     return () => resizeObserver.disconnect()
   }, [])
 
-  const { data: rates } = useQuery(
+  const { data: rates, isLoading } = useQuery(
     fetchHistoryRatesOptions(base, quote, period),
   )
+
+  // Keep the measured container mounted while loading: the skeleton renders
+  // inside it, so chartSize is already known when the data arrives.
+  const isReady = !isLoading && mounted && chartSize !== undefined
 
   const data = rates ?? []
   const latest = data.at(-1)
@@ -70,15 +68,18 @@ function HistoryChart() {
         <span className="text-preset-3 text-fx-neutral-50 uppercase">
           {base}/{quote}
         </span>
-        {latest && (
+        {latest && !isLoading && (
           <span className="text-preset-5 text-fx-neutral-200">
             {latest.rate.toFixed(4)} · {format(parseDate(latest.date), 'MMM d')}
           </span>
         )}
       </div>
 
-      <div ref={chartContainerRef} className="mt-6 h-[300px] w-full">
-        {mounted && chartSize && (
+      <div ref={chartContainerRef} className="mt-6 h-75 w-full">
+        {!isReady && (
+          <div className="bg-fx-neutral-600 h-full w-full animate-pulse rounded-xl" />
+        )}
+        {isReady && (
           <AreaChart
             width={chartSize.width}
             height={chartSize.height}
